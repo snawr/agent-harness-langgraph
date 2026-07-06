@@ -32,5 +32,6 @@ def critic_node(state):
 
     return {
         "iteration": iteration,
-        "current_step": 0
+        "current_step": 0,
+        "status": "running"
     }
