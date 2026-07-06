@@ -71,6 +71,76 @@ def validate_patch_paths(repo_root: str | Path, patch: str) -> PatchResult:
     return {"success": True, "logs": "", "changed_files": changed_files}
 
 
+def _parse_new_file_contents(patch: str) -> dict[str, str]:
+    files: dict[str, str] = {}
+    current_path: str | None = None
+    is_new_file = False
+    content_lines: list[str] = []
+
+    def commit_current():
+        if current_path and is_new_file:
+            files[current_path] = "\n".join(content_lines)
+
+    for line in patch.splitlines():
+        if line.startswith("diff --git "):
+            commit_current()
+            current_path = None
+            is_new_file = False
+            content_lines = []
+            continue
+
+        if line.startswith("--- "):
+            is_new_file = line == "--- /dev/null"
+            continue
+
+        if line.startswith("+++ "):
+            path = line[4:]
+            if path.startswith("b/"):
+                path = path[2:]
+            current_path = path
+            continue
+
+        if is_new_file and current_path is not None:
+            if line.startswith("+") and not line.startswith("+++"):
+                content_lines.append(line[1:])
+
+    commit_current()
+    return files
+
+
+def _files_already_match_new_patch(repo_root: str | Path, patch: str) -> bool:
+    root = _repo_root(repo_root)
+    new_files = _parse_new_file_contents(patch)
+    if not new_files:
+        return False
+
+    for path, content in new_files.items():
+        target = root / path
+        if not target.exists():
+            return False
+        existing = target.read_text(encoding="utf-8")
+        if existing != content:
+            return False
+    return True
+
+
+def _already_applied_patch_result(repo_root: str | Path, patch: str, original_logs: str, changed_files: list[str]) -> PatchResult:
+    if "already exists in working directory" in original_logs:
+        if _files_already_match_new_patch(repo_root, patch):
+            return {
+                "success": True,
+                "logs": "Patch already applied; files exist with matching contents.",
+                "changed_files": changed_files,
+            }
+    if "patch does not apply" in original_logs.lower() and _files_already_match_new_patch(repo_root, patch):
+        return {
+            "success": True,
+            "logs": "Patch already applied; files exist with matching contents.",
+            "changed_files": changed_files,
+        }
+    return {"success": False, "logs": original_logs, "changed_files": changed_files}
+
+
 def apply_unified_diff(repo_root: str | Path, patch: str) -> PatchResult:
     path_result = validate_patch_paths(repo_root, patch)
     if not path_result["success"]:
@@ -86,11 +156,10 @@ def apply_unified_diff(repo_root: str | Path, patch: str) -> PatchResult:
         input_text=patch,
     )
     if check["returncode"] != 0:
-        return {
-            "success": False,
-            "logs": check["stdout"] + check["stderr"],
-            "changed_files": path_result["changed_files"],
-        }
+        result = _already_applied_patch_result(root, patch, check["stdout"] + check["stderr"], path_result["changed_files"])
+        if result["success"]:
+            return result
+        return result
 
     apply = run_process(
         ["git", "apply", *directory_args, "-"],
@@ -99,11 +168,11 @@ def apply_unified_diff(repo_root: str | Path, patch: str) -> PatchResult:
         input_text=patch,
     )
     if apply["returncode"] != 0:
-        return {
-            "success": False,
-            "logs": apply["stdout"] + apply["stderr"],
-            "changed_files": path_result["changed_files"],
-        }
+        logs = apply["stdout"] + apply["stderr"]
+        result = _already_applied_patch_result(root, patch, logs, path_result["changed_files"])
+        if result["success"]:
+            return result
+        return result
 
     return {
         "success": True,

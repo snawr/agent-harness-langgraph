@@ -1,5 +1,5 @@
 # nodes/coder.py
-from llm.client import LLMClient
+from agent.llm.client import LLMClient
 
 llm = LLMClient()
 
