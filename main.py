@@ -1,6 +1,8 @@
 def main():
     from agent.graph import build_graph
+    from agent.logging import configure_logging
 
+    configure_logging("artifacts/agent-loop.log")
     graph = build_graph()
     result = graph.invoke(
         {
@@ -13,11 +15,16 @@ def main():
             "last_command": None,
             "last_logs": "",
             "iteration": 0,
-            "max_iterations": 1,
+            "max_iterations": 3,
             "status": "running",
+            "trace": [],
         }
     )
-    print(result["status"])
+    print(f"status={result['status']}")
+    if result.get("trace"):
+        print("trace:")
+        for step in result["trace"]:
+            print(f" - {step}")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 from agent.llm.client import LLMClient
 from agent.parsers import UnifiedDiff
 from agent.config.prompts import CODER_SYSTEM, CODER_USER_TEMPLATE
+from agent.logging import log_state, record_event
 
 llm = LLMClient()
 
@@ -17,6 +18,9 @@ def coder_node(state):
         {"role": "system", "content": CODER_SYSTEM},
         {"role": "user", "content": user_prompt},
     ]
+
+    record_event(state, "coder_input", {"messages": messages})
+    log_state(state, "coder", "input")
 
     response = llm.invoke(messages)
     patch = (response.content or "").strip()

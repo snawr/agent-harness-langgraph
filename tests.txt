@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/snawr/agent-harness/agent-harness-langgraph
+configfile: pyproject.toml
+plugins: anyio-4.14.1, langsmith-0.9.6
+collected 14 items
+
+tests/test_nodes.py test_planner_returns_plan result: {'plan': ['Analyze task: Create development plan for snake game in python', 'Identify required files', 'Implement changes', 'Run tests', 'Fix issues if needed'], 'current_step': 0, 'iteration': 0, 'status': 'running'}
+.test_coder_returns_cleaned_patch result: {'last_patch': 'diff --git a/foo.py b/foo.py\n--- /dev/null\n+++ b/foo.py\n@@ -0,0 +1 @@\n+print("hi")'}
+.test_coder_returns_patch_error_for_invalid_diff result: {'last_patch': 'not a diff', 'patch_error': 'invalid unified-diff format'}
+.test_patcher_applies_patch_successfully result: {'patch_result': {'success': True, 'logs': 'applied', 'changed_files': ['foo.py']}}
+.test_patcher_returns_error_for_empty_patch result: {'patch_result': {'success': False, 'logs': 'No patch provided.', 'changed_files': []}}
+.test_patcher_returns_patch_error_from_state result: {'patch_result': {'success': False, 'logs': 'Patch validation error: invalid unified-diff format', 'changed_files': []}}
+.test_executor_runs_tests_when_patch_ok result: {'command': 'pytest -q', 'returncode': 0, 'stdout': 'ok', 'stderr': '', 'timed_out': False}
+.test_executor_skips_when_patch_failed result: {'last_logs': 'bad patch', 'last_command': None}
+.test_critic_fails_when_patch_failed_and_max_reached result: {'iteration': 1, 'status': 'failed'}
+.test_critic_retries_when_patch_failed_and_iterations_remain result: {'iteration': 1, 'current_step': 0, 'status': 'running'}
+.test_critic_succeeds_on_passing_command result: {'iteration': 1, 'status': 'success'}
+.test_critic_retries_on_command_failure result: {'iteration': 1, 'current_step': 0, 'status': 'running'}
+...
+
+============================== 14 passed in 0.17s ==============================

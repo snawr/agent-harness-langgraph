@@ -1,9 +1,13 @@
 # nodes/planner.py
 
+from agent.logging import log_state, record_event
+
+
 def planner_node(state):
     task = state["task"]
+    record_event(state, "planner_input", {"task": task})
+    log_state(state, "planner", "input")
 
-    # placeholder (później Qwen)
     plan = [
         f"Analyze task: {task}",
         "Identify required files",
@@ -12,9 +16,12 @@ def planner_node(state):
         "Fix issues if needed"
     ]
 
-    return {
+    result = {
         "plan": plan,
         "current_step": 0,
         "iteration": 0,
-        "status": "running"
+        "status": "running",
     }
+    record_event(state, "planner_output", result)
+    log_state(state, "planner", "output")
+    return result

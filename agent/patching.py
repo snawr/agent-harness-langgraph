@@ -124,6 +124,35 @@ def _files_already_match_new_patch(repo_root: str | Path, patch: str) -> bool:
     return True
 
 
+def _existing_new_file_patch_result(repo_root: str | Path, patch: str, changed_files: list[str]) -> PatchResult | None:
+    root = _repo_root(repo_root)
+    new_files = _parse_new_file_contents(patch)
+    if not new_files:
+        return None
+
+    existing_targets: list[str] = []
+    for path in new_files:
+        target = root / path
+        if target.exists():
+            existing_targets.append(path)
+
+    if not existing_targets:
+        return None
+
+    if _files_already_match_new_patch(root, patch):
+        return {
+            "success": True,
+            "logs": "Patch already applied; new-file targets already exist with matching contents.",
+            "changed_files": changed_files,
+        }
+
+    return {
+        "success": True,
+        "logs": "Patch skipped: new-file target(s) already exist in the repository: " + ", ".join(existing_targets),
+        "changed_files": changed_files,
+    }
+
+
 def _already_applied_patch_result(repo_root: str | Path, patch: str, original_logs: str, changed_files: list[str]) -> PatchResult:
     if "already exists in working directory" in original_logs:
         if _files_already_match_new_patch(repo_root, patch):
@@ -147,6 +176,10 @@ def apply_unified_diff(repo_root: str | Path, patch: str) -> PatchResult:
         return path_result
 
     root = _repo_root(repo_root)
+    existing_result = _existing_new_file_patch_result(root, patch, path_result["changed_files"])
+    if existing_result is not None:
+        return existing_result
+
     apply_cwd, directory_args = _git_apply_context(root)
 
     check = run_process(

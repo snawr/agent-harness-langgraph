@@ -32,3 +32,4 @@ class AgentState(TypedDict):
     max_iterations: int
 
     status: str  # "running" | "success" | "failed"
+    trace: List[str]
