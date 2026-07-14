@@ -20,13 +20,13 @@ def build_graph():
         def wrapped(state):
             append_trace(state, f"enter:{name}")
             record_event(state, "node_enter", name)
-            log_state(state, name, "enter")
+            # log_state(state, name, "enter")
             result = node(state)
             if isinstance(result, dict):
                 state.update(result)
             append_trace(state, f"exit:{name}")
             record_event(state, "node_exit", name)
-            log_state(state, name, "exit")
+            # log_state(state, name, "exit")
             return result
 
         return wrapped

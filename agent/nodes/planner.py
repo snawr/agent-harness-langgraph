@@ -3,6 +3,7 @@
 from agent.logging import log_state, record_event
 from agent.config.prompts import PLANNER_SYSTEM, PLANNER_USER_TEMPLATE
 from agent.llm.client import LLMClient
+import json
 
 llm = LLMClient()
 
@@ -15,7 +16,7 @@ def planner_node(state):
     log_state(state, "planner", "input")
 
     user_prompt = PLANNER_USER_TEMPLATE.format(task=task, repo_context=repo_context)
-    print(f"Planner node user prompt:\n{user_prompt}\n{'-'*40}")
+    # print(f"Planner node user prompt:\n{user_prompt}\n{'-'*40}")
     messages = [
         {"role": "system", "content": PLANNER_SYSTEM},
         {"role": "user", "content": user_prompt},
@@ -25,7 +26,7 @@ def planner_node(state):
     log_state(state, "coder", "input")
 
     response = llm.invoke(messages)
-    plan = (response.content or "").strip()
+    plan = json.loads((response.content or "").strip())
 
     result = {
         "plan": plan,

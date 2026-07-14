@@ -6,7 +6,7 @@ def main():
     graph = build_graph()
     result = graph.invoke(
         {
-            "task": "Ceate simple calrculator in python. No GUI. The calculator should support addition, subtraction, multiplication, and division.",
+            "task": "Ceate simple calculator in python. No GUI. The calculator should support addition, subtraction, multiplication, and division.",
             "plan": [],
             "current_step": 0,
             "files": {"./workspaces/calculator/calculator.py": "main file for calculator app"},

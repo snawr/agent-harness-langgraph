@@ -35,10 +35,8 @@ def run_command(
     input_text: str | None = None,
 ) -> CommandResult:
     env = os.environ.copy()
-    print(Path('.').resolve())
     repo_root = Path(cwd).resolve()
 
-    print(f"repo root path: {repo_root}\n{'-'*40}")
 
     python_executable = _resolve_python_executable(repo_root)
     venv_bin = repo_root / ".venv" / "bin"
