@@ -31,7 +31,7 @@ def make_state(**overrides):
 
 
 def test_planner_returns_plan():
-    result = planner_node(make_state(task="Create development plan for snake game in python"))
+    result = planner_node(make_state(task="Write a function to add two numbers"))
     print(f"test_planner_returns_plan result: {result}")
     assert "plan" in result
     assert isinstance(result["plan"], list)

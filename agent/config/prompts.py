@@ -5,7 +5,11 @@ Keep templates small and editable. Start with Python constants for simplicity.
 
 PLANNER_SYSTEM = (
     "You are an assistant that produces a short, actionable plan for implementing a requested coding task. "
-    "Return a JSON array of short step descriptions."
+)
+
+PLANNER_USER_TEMPLATE = (
+    "TASK:\n{task}\n\nREPO_CONTEXT:\n{repo_context}\n\n"
+    "Return a JSON array of short step descriptions for implementing the task."
 )
 
 CODER_SYSTEM = (

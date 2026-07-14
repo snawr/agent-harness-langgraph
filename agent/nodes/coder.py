@@ -10,16 +10,17 @@ llm = LLMClient()
 def coder_node(state):
     task = state["task"]
     step = state["current_step"]
-    repo_context = state.get("repo_context", "")
+    # repo_context = state.get("repo_context", "")
+    repo_context = state.get("files", "")
 
     user_prompt = CODER_USER_TEMPLATE.format(task=task, step=step, repo_context=repo_context)
-
+    print(f"Coder node user prompt:\n{user_prompt}\n{'-'*40}")
     messages = [
         {"role": "system", "content": CODER_SYSTEM},
         {"role": "user", "content": user_prompt},
     ]
 
-    record_event(state, "coder_input", {"messages": messages})
+    # record_event(state, "coder_input", {"messages": messages})
     log_state(state, "coder", "input")
 
     response = llm.invoke(messages)

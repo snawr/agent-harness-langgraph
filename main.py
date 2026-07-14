@@ -6,10 +6,10 @@ def main():
     graph = build_graph()
     result = graph.invoke(
         {
-            "task": "Smoke test agent harness",
+            "task": "Ceate simple calrculator in python. No GUI. The calculator should support addition, subtraction, multiplication, and division.",
             "plan": [],
             "current_step": 0,
-            "files": {},
+            "files": {"./workspaces/calculator/calculator.py": "main file for calculator app"},
             "last_patch": None,
             "patch_result": None,
             "last_command": None,

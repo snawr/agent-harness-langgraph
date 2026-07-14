@@ -4,7 +4,7 @@ from agent.patching import apply_unified_diff
 
 def patcher_node(state):
     patch = state.get("last_patch") or ""
-    record_event(state, "patcher_input", {"patch": patch})
+    # record_event(state, "patcher_input", {"patch": patch})
     log_state(state, "patcher", "input")
 
     patch_error = state.get("patch_error")
@@ -22,6 +22,6 @@ def patcher_node(state):
 
     patch_result = apply_unified_diff(".", patch)
     result = {"patch_result": patch_result}
-    record_event(state, "patcher_output", result)
+    # record_event(state, "patcher_output", result)
     log_state(state, "patcher", "output")
     return result

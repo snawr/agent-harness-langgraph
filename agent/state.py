@@ -20,6 +20,7 @@ class AgentState(TypedDict):
 
     plan: List[str]
     current_step: int
+    repo_context: str
 
     files: Dict[str, str]  # snapshot repo (path -> content)
 
