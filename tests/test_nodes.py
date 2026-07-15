@@ -15,7 +15,7 @@ from agent.nodes.critic import critic_node
 def make_state(**overrides):
     state = {
         "task": "Test task",
-        "plan": [],
+        "plan": ["Implement the current task"],
         "current_step": 0,
         "files": {},
         "last_patch": None,
@@ -31,10 +31,12 @@ def make_state(**overrides):
 
 
 def test_planner_returns_plan():
-    result = planner_node(make_state(task="Write a function to add two numbers"))
-    print(f"test_planner_returns_plan result: {result}")
+    response = SimpleResponse('["Add an addition function", "Test the function"]')
+    with patch("agent.nodes.planner.llm.invoke", return_value=response):
+        result = planner_node(make_state(task="Write a function to add two numbers"))
+
     assert "plan" in result
-    assert isinstance(result["plan"], list)
+    assert result["plan"] == ["Add an addition function", "Test the function"]
     assert result["status"] == "running"
     assert result["current_step"] == 0
 

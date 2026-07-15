@@ -1,25 +1,20 @@
-import os
-import sys
+from pathlib import Path
 
-def test_agent_initialization():
-    """Verify agent can be initialized without errors."""
-    try:
-        import agent.main
-        assert agent.main.__name__ == 'main'
-        print("Agent initialization test passed")
-    except Exception as e:
-        print(f"Agent initialization test failed: {str(e)}")
-        sys.exit(1)
 
-def test_required_files():
-    """Check presence of essential files."""
+def test_agent_graph_builds_without_invoking_an_llm():
+    """The graph can be constructed without requiring a live model service."""
+    from agent.graph import build_graph
+
+    assert build_graph() is not None
+
+
+def test_required_source_files_exist():
+    root = Path(__file__).resolve().parents[1]
     required_files = [
-        'agent/main.py',
-        'agent/config.yaml',
-        'agent/requirements.txt'
+        "main.py",
+        "agent/graph.py",
+        "agent/state.py",
+        "agent/config/prompts.py",
     ]
 
-    for file in required_files:
-        if not os.path.exists(file):
-            print(f"Missing required file: {file}")
-            sys.exit(1)
+    assert all((root / path).is_file() for path in required_files)

@@ -17,7 +17,7 @@ def executor_node(state):
         return result
 
     # result = run_command("pytest -q")
-    result = run_command(cmd="echo pwd", cwd="./workspaces")
+    result = run_command(cmd="python -m compileall .", cwd="./workspaces")
     output = {
         "last_command": result,
         "last_logs": result["stdout"] + result["stderr"],

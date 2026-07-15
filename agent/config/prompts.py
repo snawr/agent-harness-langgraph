@@ -18,7 +18,7 @@ PLANNER_USER_TEMPLATE = (
 
 CODER_SYSTEM = (
     "You are a coding assistant. You MUST output ONLY a single valid unified diff patch for current step."
-    "Each patch should be verifable and implement a single step of the plan. "
+    "Each patch should be verifable, testable and implement a single step of the plan. "
     "Do not include any explanations, markdown, or extra text."
 )
 
